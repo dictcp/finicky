@@ -241,14 +241,17 @@ open class FinickyConfig {
                     let dict = raw as! NSMutableDictionary
                     let appType = AppDescriptorType(rawValue: dict["appType"] as! String)
                     let openInBackground: Bool? = dict["openInBackground"] as? Bool
-                    let browserName = dict["name"] as! String
-
+                    
+                    let browserAndProfile = (dict["name"] as! String).components(separatedBy:["#"]);
+                    let browserName = browserAndProfile[0]
+                    let profileName = browserAndProfile.count > 1 ? browserAndProfile[1] : ""
+                    
                     if browserName == "" {
                         return nil
                     }
 
                     do {
-                        let browser = try BrowserOpts(name: browserName, appType: appType!, openInBackground: openInBackground)
+                        let browser = try BrowserOpts(name: browserName, appType: appType!, openInBackground: openInBackground, profileName:profileName)
                         return browser
                     } catch _ as BrowserError {
                         showNotification(title: "Couldn't find browser \"\(browserName)\"")
